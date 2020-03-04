@@ -7,7 +7,7 @@
 struct line {
     char *text;
     int length;
-}
+};
 
 struct coder {
     char *in;
@@ -98,13 +98,15 @@ unsigned char get_coder(FILE *source, unsigned char input_type, struct coder *de
         if(line1.length < 3) {
             return -1;
         }
+        destination->in = malloc(line1.length * sizeof(char));
+        destination->out = malloc(line1.length * sizeof(char));
         for(int i = 0; i < line1.length - 1; i++) {
-            destination->in = *(line1.text + i);
+            *(destination->in + i) = *(line1.text + i);
             if(i + 1 == line1.length - 1) {
-                destination->out = *(line1.text);
+                *(destination->out + i) = *(line1.text);
                 destination->length = ++i;
             } else
-                destination->out = *(line1.text + i + 1);
+                *(destination->out + i) = *(line1.text + i + 1);
         }
         return 0;
     } else if(input_type == TWOLINES) { 
