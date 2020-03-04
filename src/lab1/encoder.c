@@ -4,6 +4,11 @@
 #include "errors.h"
 
 
+struct line {
+    char *text;
+    int length;
+}
+
 struct coder {
     char *in;
     char *out;
@@ -12,6 +17,7 @@ struct coder {
 #define SINGLELINE 1
 #define TWOLINES 2
 unsigned char get_coder(FILE *source, unsigned char input_type, struct coder *destination);
+char * get_line(FILE *source);
 void encode(char *target, struct coder dict);
 
 unsigned char get_text(char *destination);
@@ -19,18 +25,14 @@ void print_result(char *source);
 
 unsigned char wait_message(void);
 
-unsigned char file_open(char *name, char *mode, FILE *destination);
-/*
-    Сделать соответствующие ошибки в errors.h!!!!
-*/
 int main(int argc, char *argv[]) {
     if(argc == 3) {
         FILE *coder1, *coder2;
        
-        if(file_open(argv[1], "r", coder1)) {
+        if((coder1 = fopen(argv[1], "r")) == NULL) {
             print_err(fileio_error.unable_to_read, argv[1]);
             return -1;
-        } else if(file_open(argv[2]), "r", coder2) {
+        } else if((coder2 = fopen(argv[2], "r")) == NULL) {
             print_err(fileio_error.unable_to_read, argv[2]);
             return -1;
         }
@@ -67,4 +69,48 @@ int main(int argc, char *argv[]) {
     }
     
         return 0;
+}
+
+struct line get_line(FILE *source) {
+    struct line input;
+    input.text = malloc(sizeof(char));
+    input.length = sizeof(char);
+    char buf = '\0';
+    for(; fscanf(source, "%c", buf); input.length++) {
+        if(buf == '\n') {
+            *(input.text + input.length - 1) = '\0';
+            return input;
+        }
+        input.text = realloc(input.text, sizeof(char) + (input.length - 1) * sizeof(char));
+        *(input.text + (input.length - 1)) = buf;
+    }
+    if(input.length - 1 != 0) {
+        *(input.text + input.length - 1) = '\0';
+    } else {
+        free(input.text);
+    }
+    return input;
+}
+
+unsigned char get_coder(FILE *source, unsigned char input_type, struct coder *destination) {
+    if(input_type == SINGLELINE) {
+        struct line line1 = get_line(source);
+        if(line1.length < 3) {
+            return -1;
+        }
+        for(int i = 0; i < line1.length; i++, (destination->length)++) {
+            destination->in = *(line1.text + i);
+            if(i + 1 == line1.length)
+                destination->out = *(line1.text);
+            else
+                destination->out = *(line1.text + i + 1);
+        }
+        return 0;
+    } else if(input_type == TWOLINES) { 
+        struct line1 = get_line(source);
+        struct line2 = get_line(source);
+        if(line1.length == 1 || line2.length == 2 || line1.length != line2.length) {
+            return -1;
+        }
+    }
 }

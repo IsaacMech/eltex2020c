@@ -17,9 +17,11 @@ struct simple_error {
 const struct {
     struct simple_error not_enough_args;
     struct simple_error too_many_args;
+    struct simple_error undefined;
 } exec_error  = {
     "Программа запущена с недостаточным количеством аргументов!", WITHOUT_ARG,
     "Программа запущена со слишком большим количеством аргументов!", WITHOUT_ARG,
+    "В ходе работы программы возникла неизвестная ошибка.", WITHOUT_ARG
 };
 /*структурная переменная fileio_error, в котором содержатся все 
 возможные ошибки связанные с использование функции fopen()*/
@@ -35,6 +37,12 @@ const struct {
     struct simple_error unable_to_alloc;
 } mem_error = {
     "Невозможно выделить память для %s!", WITH_ARG
+};
+
+const struct {
+    struct simple_error incorrect_format;
+} coder_error = {
+    "Неизвестный формат файла %s!", WITH_ARG
 };
 /*
 int static debug_print_text(char *text, FILE *target) {
