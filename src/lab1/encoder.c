@@ -46,7 +46,7 @@ int main(int argc, char *argv[]) {
            print_err(coder_error.incorrect_format, argv[2]);
            return -1;
         }
-        printf("%.10s %.10s\n", alphabet.in, alphabet.out);
+        printf("%s %s\n", alphabet.in, alphabet.out);
 /*
         char *text;
         do {
