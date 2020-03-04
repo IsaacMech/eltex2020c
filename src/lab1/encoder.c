@@ -46,7 +46,8 @@ int main(int argc, char *argv[]) {
            print_err(coder_error.incorrect_format, argv[2]);
            return -1;
         }
-
+        printf("%.10s %.10s\n", alphabet.in, alphabet.out;
+/*
         char *text;
         do {
             if(get_text(text)) {
@@ -59,7 +60,7 @@ int main(int argc, char *argv[]) {
             print_result(text);
             free(text);
         } while(wait_message());
-        
+       */ 
     } else if(argc > 3) {
         print_err(exec_error.too_many_args);
         return -1;
