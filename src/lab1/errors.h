@@ -46,9 +46,9 @@ int static debug_print_text(char *text, FILE *target) {
 }
 */
 int static print_text(char *text, FILE *target) {
-    if(fprintf(target, "%s\n", text))
+    if(fprintf(target, "%s\n", text)) {
         return 0;
-    else
+    } else
         return -1;
 }
 
@@ -68,8 +68,10 @@ int print_err(struct simple_error name, ...) {
         text = combine_str(text, arg);
         if(print_text(text, stdout))
             return -1;
-        else
+        else {
+            free(text);
             return 0;
+        }
     } else {
         if(print_text(name.text, stdout))
             return -1;
