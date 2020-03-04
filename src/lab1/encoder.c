@@ -39,7 +39,7 @@ int main(int argc, char *argv[]) {
 
         struct coder alphabet, punct;
 
-        if(get_coder(coder1, TWOLINES, &alphabet)) {
+        if(get_coder(coder1, SINGLELINE, &alphabet)) {
            print_err(coder_error.incorrect_format, argv[1]);
            return -1;
         } else if(get_coder(coder2, SINGLELINE, &punct)) {
@@ -98,11 +98,12 @@ unsigned char get_coder(FILE *source, unsigned char input_type, struct coder *de
         if(line1.length < 3) {
             return -1;
         }
-        for(int i = 0; i < line1.length; i++, (destination->length)++) {
+        for(int i = 0; i < line1.length - 1; i++) {
             destination->in = *(line1.text + i);
-            if(i + 1 == line1.length)
+            if(i + 1 == line1.length - 1) {
                 destination->out = *(line1.text);
-            else
+                destination->length = ++i;
+            } else
                 destination->out = *(line1.text + i + 1);
         }
         return 0;
@@ -111,6 +112,7 @@ unsigned char get_coder(FILE *source, unsigned char input_type, struct coder *de
         struct line2 = get_line(source);
         if(line1.length == 1 || line2.length == 2 || line1.length != line2.length) {
             return -1;
-        }
+        } 
+        return -1; /*работа в процессе */
     }
 }
