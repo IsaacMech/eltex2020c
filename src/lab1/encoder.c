@@ -17,7 +17,7 @@ struct coder {
 #define SINGLELINE 1
 #define TWOLINES 2
 unsigned char get_coder(FILE *source, unsigned char input_type, struct coder *destination);
-char * get_line(FILE *source);
+struct line get_line(FILE *source);
 void encode(char *target, struct coder dict);
 
 unsigned char get_text(char *destination);
@@ -76,7 +76,7 @@ struct line get_line(FILE *source) {
     input.text = malloc(sizeof(char));
     input.length = sizeof(char);
     char buf = '\0';
-    for(; fscanf(source, "%c", buf); input.length++) {
+    for(; fscanf(source, "%c", &buf); input.length++) {
         if(buf == '\n') {
             *(input.text + input.length - 1) = '\0';
             return input;
@@ -108,8 +108,8 @@ unsigned char get_coder(FILE *source, unsigned char input_type, struct coder *de
         }
         return 0;
     } else if(input_type == TWOLINES) { 
-        struct line1 = get_line(source);
-        struct line2 = get_line(source);
+        struct line line1 = get_line(source);
+        struct line line2 = get_line(source);
         if(line1.length == 1 || line2.length == 2 || line1.length != line2.length) {
             return -1;
         } 
