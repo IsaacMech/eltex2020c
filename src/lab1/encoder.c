@@ -3,7 +3,6 @@
 #include <string.h>
 #include "errors.h"
 
-
 struct line {
     char *text;
     int length;
