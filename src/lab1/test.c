@@ -2,10 +2,12 @@
 
 int main() {
     FILE *input = fopen("codex.txt", "r");
-    for(int j = 0; j < 8; j++) {
-    struct char_utf8 buf = fgetc_utf8(input);
-    for(int i = 0; i < buf.size; i++) {
-        putc(*(buf.symbol + i), stdout);
+    
+    struct line_utf8 line1 = get_line_utf8(input);
+    for(int j = 0; j < line1.size; j++) {
+    
+    for(int i = 0; i < *(line1.line + j).size; i++) {
+        putc(*(*(line1.line + j).symbol + i), stdout);
     }
     }
 
