@@ -13,7 +13,7 @@ struct line_utf8 {
 };
 
 int fgetc_utf8(FILE *source, char *dest);
-
+/*
 struct line_utf8 get_line_utf8(FILE *source) {
     struct line_utf8 line1 = { NULL, 0 };
     struct char_utf8 buf;
@@ -29,14 +29,16 @@ struct line_utf8 get_line_utf8(FILE *source) {
     return line1;
 }
 
-
-int fgetc_utf8(FILE *source, char *dest) {
+*/
+struct char_utf8 fgetc_utf8(FILE *source) {
     char buf = 0;
     char size = 0;
+    char *dest = NULL;
+    struct char_utf8 result = { NULL, 0 };
     if(fread(&buf, 1, 1, source)) {
-        if(buf & b11000000 == b11000000) { /*если есть два бита впереди */
-            if(buf & b11100000 == b11100000) {
-                if(buf & b11110000 == b11110000) {
+        if((buf & b11000000) == b11000000) { /*если есть два бита впереди */
+            if((buf & b11100000) == b11100000) {
+                if((buf & b11110000) == b11110000) {
                     size = 4;
                 } else {
                     size = 3;
@@ -53,13 +55,14 @@ int fgetc_utf8(FILE *source, char *dest) {
             if(fread(&buf, 1, 1, source)) {
                 *(dest + i) = buf;
             } else {
-                return -1;
+                return result;
             }
         }
-
-        return size;
+        result.symbol = dest;
+        result.size = size;
+        return result;
     } else {
-        return -1;
+        return result;
     }
 }
 
