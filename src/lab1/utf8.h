@@ -12,7 +12,7 @@ struct line_utf8 {
     int length;
 };
 
-int fgetc_utf8(FILE *source, char *dest);
+struct char_utf8 fgetc_utf8(FILE *source, char *dest);
 /*
 struct line_utf8 get_line_utf8(FILE *source) {
     struct line_utf8 line1 = { NULL, 0 };
