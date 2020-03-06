@@ -6,8 +6,8 @@ int main() {
     struct line_utf8 line1 = get_line_utf8(input);
     for(int j = 0; j < line1.size; j++) {
     
-    for(int i = 0; i < *(line1.text + j).size; i++) {
-        putc(*(*(line1.text + j).symbol + i), stdout);
+    for(int i = 0; i < *(line1.text.size + j); i++) {
+        putc(*(*(line1.text.symbol + j) + i), stdout);
     }
     }
 
