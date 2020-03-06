@@ -9,27 +9,29 @@ struct char_utf8 {
 
 struct line_utf8 {
     struct char_utf8 *text;
-    int length;
+    int size;
 };
 
+
 struct char_utf8 fgetc_utf8(FILE *source);
-/*
+
 struct line_utf8 get_line_utf8(FILE *source) {
     struct line_utf8 line1 = { NULL, 0 };
-    struct char_utf8 buf;
-   
-    for(int i = 0; (buf.size = fgetc_utf8(source, buf.symbol)) != -1; i++) {
+    struct char_utf8 buf = { NULL, 0 };
+    buf = fgetc_utf8(source);
+    if(buf.size == 0) return line1;
+    *(line1.text) = buf;
+    for(int i = 0; (buf.size != 0) || (*(buf.symbol) != '\n') || (*(buf.symbol) != '\0'; i++) {
         if(i == 0)
             line1.text = malloc(sizeof(struct char_utf8));
         *(line1.text + i) = buf;
-        line1.length++;
+        line1.size++;
         line1.text = realloc(line1.text, sizeof(struct char_utf8) + i * sizeof(struct char_utf8));
     }
 
     return line1;
 }
 
-*/
 struct char_utf8 fgetc_utf8(FILE *source) {
     char buf = 0;
     char size = 0;
@@ -65,5 +67,4 @@ struct char_utf8 fgetc_utf8(FILE *source) {
         return result;
     }
 }
-
 
