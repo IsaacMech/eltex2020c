@@ -21,7 +21,7 @@ struct line_utf8 get_line_utf8(FILE *source) {
     buf = fgetc_utf8(source);
     if(buf.size == 0) return line1;
     *(line1.text) = buf;
-    for(int i = 0; (buf.size != 0) || (*(buf.symbol) != '\n') || (*(buf.symbol) != '\0'; i++) {
+    for(int i = 0; (buf.size != 0) || (*(buf.symbol) != '\n') || (*(buf.symbol) != '\0'); i++) {
         if(i == 0)
             line1.text = malloc(sizeof(struct char_utf8));
         *(line1.text + i) = buf;
