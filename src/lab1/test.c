@@ -2,10 +2,9 @@
 
 int main() {
     FILE *input = fopen("codex.txt", "r");
-    char *buf; int size;
-    while((size = fgetc_utf8(input, buf)) != -1) {
-        *(buf + size) = '\0';
-        printf("%s\n", buf);
+    struct char_utf8 buf = fgetc_utf8(input);
+    for(int i = 0; i < buf.size; i++) {
+        putc(*(buf.symbol + i);
     }
 
     return 0;
