@@ -12,36 +12,38 @@ struct line_utf8 {
     int size;
 };
 
-
 struct char_utf8 fgetc_utf8(FILE *source);
+struct line_utf8 * get_line_utf8(FILE *source);
+
+int print_line_utf8 (struct line_utf8 *line, FILE *dest);
+/*возвращает количество выведенных символов, печатает в dest
+строку utf8*/
+int print_line_utf8 (struct line_utf8 *line, FILE *dest) {
+    int i = 0;
+    while(i < line->size) {
+        for(int j = 0; j < (line->text + i)->size; j++) {
+            putc(*((line->text + i)->symbol + j), dest);
+        }
+        i++;
+    }
+    return i + 1;
+}
 
 struct line_utf8 * get_line_utf8(FILE *source) {
     struct line_utf8 *line1 = malloc(sizeof(struct line_utf8));
-    printf("line1\n");
     struct char_utf8 buf = { NULL, 0 };
-    printf("line2\n");
     buf = fgetc_utf8(source);
-    printf("line3\n");
     if(buf.size == 0) return NULL;
-    printf("line4\n");
-    for(int i = 0; (*(buf.symbol) != '\n') || (*(buf.symbol) != '\0'); i++) {
-        printf("line6\n");
+    for(int i = 0; (*(buf.symbol) != 0x0A) && (*(buf.symbol) != 0x00); i++) {
         if(i == 0) {
             line1->text = malloc(sizeof(struct char_utf8));
         } else
             line1->text = realloc(line1->text, sizeof(struct char_utf8) + i * sizeof(struct char_utf8));
-        printf("line7\n");
         *(line1->text + i) = buf;
-        printf("line8\n");
         line1->size++;
-        printf("line9\n");
-        printf("size char = %d, size char + char * i = %d\n", sizeof(struct char_utf8), sizeof(struct char_utf8) + i * sizeof(struct char_utf8));
-        printf("line10\n");
         buf = fgetc_utf8(source);
         if(buf.size == 0) break;
-        printf("line11 buf size = %d\n", buf.size);
     }
-    printf("before return\n");
     return line1;
 }
 
