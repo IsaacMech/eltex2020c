@@ -2,24 +2,20 @@
 #include <stdlib.h>
 #include <string.h>
 #include "errors.h"
-
-struct line {
-    char *text;
-    int length;
-};
+#include "utf8.h"
 
 struct coder {
-    char *in;
-    char *out;
-    int length;
+    struct line_utf8 *in;
+    struct line_utf8 *out;
+    int size;
 };
+
 #define SINGLELINE 1
 #define TWOLINES 2
-unsigned char get_coder(FILE *source, unsigned char input_type, struct coder *destination);
-struct line get_line(FILE *source);
+int get_coder(FILE *source, unsigned char input_type, struct coder *destination);
+
 void encode(char *target, struct coder dict);
 
-unsigned char get_text(char *destination);
 void print_result(char *source);
 
 unsigned char wait_message(void);
@@ -45,7 +41,15 @@ int main(int argc, char *argv[]) {
            print_err(coder_error.incorrect_format, argv[2]);
            return -1;
         }
-        printf("%s %s\n", alphabet.in, alphabet.out);
+        printf("Alphabet: \n");
+        print_line_utf8(alphabet.in, stdout);
+        printf("\n");
+        print_line_utf8(alphabet.out, stdout);
+        printf("\n Punct: \n");
+        print_line_utf8(punct.in, stdout);
+        printf("\n");
+        print_line_utf8(punct.out, stdout);
+        //printf("%s %s\n", alphabet.in, alphabet.out);
 /*
         char *text;
         do {
@@ -71,52 +75,32 @@ int main(int argc, char *argv[]) {
         return 0;
 }
 
-struct line get_line(FILE *source) {
-    struct line input;
-    input.text = malloc(sizeof(char));
-    input.length = sizeof(char);
-    char buf = '\0';
-    for(; fscanf(source, "%c", &buf); input.length++) {
-        if(buf == '\n') {
-            *(input.text + input.length - 1) = '\0';
-            return input;
-        }
-        input.text = realloc(input.text, sizeof(char) + (input.length - 1) * sizeof(char));
-        *(input.text + (input.length - 1)) = buf;
-    }
-    if(input.length - 1 != 0) {
-        *(input.text + input.length - 1) = '\0';
-    } else {
-        free(input.text);
-    }
-    return input;
-}
-
-unsigned char get_coder(FILE *source, unsigned char input_type, struct coder *destination) {
+int get_coder(FILE *source, unsigned char input_type, struct coder *destination) {
     if(input_type == SINGLELINE) {
-        struct line line1 = get_line(source);
-        if(line1.length < 3) {
+        struct line_utf8 *line1 = get_line_utf8(source);
+        if(line1->size < 2) {
             return -1;
         }
-        destination->in = malloc(line1.length * sizeof(char));
-        destination->out = malloc(line1.length * sizeof(char));
-        for(int i = 0; i < line1.length - 1; i++) {
-            *(destination->in + i) = *(line1.text + i);
-            if(i + 1 == line1.length - 1) {
-                *(destination->out + i) = *(line1.text);
-                destination->length = ++i;
+        destination->in = line1;
+
+        destination->out->size = line1->size;
+        destination->out->text = malloc(line1->size * sizeof(struct char_utf8));
+        for(int i = 0; i < line1->size; i++) {
+            if(i + 1 == line1->size) {
+                *(destination->out->text + i) = *(line1->text);
             } else
-                *(destination->out + i) = *(line1.text + i + 1);
+                *(destination->out->text + i) = *(line1->text + i + 1);
         }
         return 0;
     } else if(input_type == TWOLINES) { 
-        struct line line1 = get_line(source);
-        struct line line2 = get_line(source);
-        if(line1.length == 1 || line2.length == 1 || line1.length != line2.length) {
+        struct line_utf8 *line1 = get_line_utf8(source);
+        struct line_utf8 *line2 = get_line_utf8(source);
+        if(line1->size == 1 || line2->size == 1 || line1->size != line2->size) {
             return -1;
         }
-        destination->in = line1.text;
-        destination->out = line2.text;
+        destination->in = line1;
+        destination->out = line2;
+        destination->size = line1->size;
         return 0; /*работа в процессе */
     }
 }
