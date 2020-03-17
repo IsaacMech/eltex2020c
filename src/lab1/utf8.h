@@ -16,7 +16,8 @@ int cmpc_utf8(struct char_utf8 *char1, struct char_utf8 *char2);
 int cmpl_utf8(struct line_utf8 *line1, struct line_utf8 *line2);
 
 struct char_utf8 fgetc_utf8(FILE *source);
-struct line_utf8 * get_line_utf8(FILE *source);
+struct line_utf8 *get_line_utf8(FILE *source);
+struct line_utf8 *get_text_utf8(FILE *source);
 
 int print_line_utf8(struct line_utf8 *line, FILE *dest);
 
@@ -76,15 +77,34 @@ int print_line_utf8 (struct line_utf8 *line, FILE *dest) {
     return i + 1;
 }
 
+struct line_utf8 *get_text_utf8(FILE *source) {
+    struct line_utf8 *line1 = malloc(sizeof(struct line_utf8));
+    struct char_utf8 buf = { NULL, 0 };
+    buf = fgetc_utf8(source);
+    if(buf.size == 0) return NULL;
+    for(int i = 0; (*(buf.symbol) != EOF) && (*(buf.symbol) != '\0'); i++) {
+        if(i == 0)
+            line1->text = malloc(sizeof(struct char_utf8));
+        else
+            line1->text = realloc(line1->text, sizeof(struct char_utf8) + i * sizeof(struct char_utf8));
+        *(line1->text + i) = buf;
+        line1->size++;
+        buf = fgetc_utf8(source);
+        if(buf.size == 0) break;
+    }
+    return line1;
+}
+
+
 struct line_utf8 * get_line_utf8(FILE *source) {
     struct line_utf8 *line1 = malloc(sizeof(struct line_utf8));
     struct char_utf8 buf = { NULL, 0 };
     buf = fgetc_utf8(source);
     if(buf.size == 0) return NULL;
-    for(int i = 0; (*(buf.symbol) != 0x0A) && (*(buf.symbol) != 0x00); i++) {
-        if(i == 0) {
+    for(int i = 0; (*(buf.symbol) != '\n') && (*(buf.symbol) != '\0'); i++) {
+        if(i == 0)
             line1->text = malloc(sizeof(struct char_utf8));
-        } else
+        else
             line1->text = realloc(line1->text, sizeof(struct char_utf8) + i * sizeof(struct char_utf8));
         *(line1->text + i) = buf;
         line1->size++;

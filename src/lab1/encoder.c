@@ -14,57 +14,42 @@ struct coder {
 #define TWOLINES 2
 int get_coder(FILE *source, unsigned char input_type, struct coder *destination);
 
-void encode(char *target, struct coder dict);
+void encode(struct line_utf8 *target, struct coder dict);
 
 void print_result(char *source);
 
 unsigned char wait_message(void);
 
 int main(int argc, char *argv[]) {
-    if(argc == 3) {
-        FILE *coder1, *coder2;
+    if(argc == 2) {
+        FILE *coder1;
        
         if((coder1 = fopen(argv[1], "r")) == NULL) {
             print_err(fileio_error.unable_to_read, argv[1]);
             return -1;
-        } else if((coder2 = fopen(argv[2], "r")) == NULL) {
-            print_err(fileio_error.unable_to_read, argv[2]);
-            return -1;
         }
 
-        struct coder alphabet, punct;
+        struct coder alphabet;
 
         if(get_coder(coder1, TWOLINES, &alphabet)) {
            print_err(coder_error.incorrect_format, argv[1]);
            return -1;
-        } else if(get_coder(coder2, SINGLELINE, &punct)) {
-           print_err(coder_error.incorrect_format, argv[2]);
-           return -1;
         }
-        printf("Alphabet: \n");
+
+        printf("Здравствуйте! Введите свой текст:\n[нажмите Ctrl+D, чтобы завершить ввод]\n");
+        struct line_utf8 *text = get_text_utf8(stdin);
+        printf("Текст для кодирования:\n");
+        print_line_utf8(text, stdout);
+        printf("\nСловарь:\n");
         print_line_utf8(alphabet.in, stdout);
         printf("\n");
         print_line_utf8(alphabet.out, stdout);
-        printf("\n Punct: \n");
-        print_line_utf8(punct.in, stdout);
         printf("\n");
-        print_line_utf8(punct.out, stdout);
-        //printf("%s %s\n", alphabet.in, alphabet.out);
-/*
-        char *text;
-        do {
-            if(get_text(text)) {
-            print_err(exec_error.undefined);
-            return -1;
-            }
-
-            encode(text, alphabet);
-            encode(text, punct);
-            print_result(text);
-            free(text);
-        } while(wait_message());
-       */ 
-    } else if(argc > 3) {
+        encode(text, alphabet);
+        printf("Результат:\n");
+        print_line_utf8(text, stdout);
+        printf("\n");
+    } else if(argc > 2) {
         print_err(exec_error.too_many_args);
         return -1;
     } else {
@@ -96,11 +81,25 @@ int get_coder(FILE *source, unsigned char input_type, struct coder *destination)
         struct line_utf8 *line1 = get_line_utf8(source);
         struct line_utf8 *line2 = get_line_utf8(source);
         if(line1->size == 1 || line2->size == 1 || line1->size != line2->size) {
+            free_line_utf8(line1);
+            free_line_utf8(line2);
             return -1;
         }
         destination->in = line1;
         destination->out = line2;
         destination->size = line1->size;
         return 0; /*работа в процессе */
+    }
+}
+
+
+void encode(struct line_utf8 *target, struct coder dict) {
+    for(int i = 0; i < target->size; i++) {
+        for(int j = 0; j < dict.size; j++) {
+            if(cmpc_utf8(target->text + i, dict.in->text + j)) {
+                *(target->text + i) = *(dict.out->text + j);
+                break;
+            }
+        }
     }
 }
