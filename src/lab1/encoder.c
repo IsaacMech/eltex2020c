@@ -90,6 +90,7 @@ int get_coder(FILE *source, unsigned char input_type, struct coder *destination)
         destination->size = line1->size;
         return 0; /*работа в процессе */
     }
+    return -1;
 }
 
 
