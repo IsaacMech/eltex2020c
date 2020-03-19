@@ -81,8 +81,8 @@ int get_coder(FILE *source, unsigned char input_type, struct coder *destination)
         struct line_utf8 *line1 = get_line_utf8(source);
         struct line_utf8 *line2 = get_line_utf8(source);
         if(line1->size == 1 || line2->size == 1 || line1->size != line2->size) {
-            free_line_utf8(line1);
-            free_line_utf8(line2);
+            /*free_line_utf8(line1);
+            free_line_utf8(line2);*/
             return -1;
         }
         destination->in = line1;
