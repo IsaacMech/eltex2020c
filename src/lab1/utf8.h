@@ -19,6 +19,7 @@ struct char_utf8 fgetc_utf8(FILE *source);
 struct line_utf8 *get_line_utf8(FILE *source);
 struct line_utf8 *get_text_utf8(FILE *source);
 
+int putc_utf8(struct char_utf8 *chr, FILE *dest);
 int print_line_utf8(struct line_utf8 *line, FILE *dest);
 
 int free_char_utf8(struct char_utf8 *target);
@@ -64,14 +65,19 @@ int cmpl_utf8(struct line_utf8 *line1, struct line_utf8 *line2) {
     return 1;
 }
 
+int putc_utf8(struct char_utf8 *chr, FILE *dest) {
+    for(int i = 0; i < chr->size; i++) {
+        putc(*(chr->symbol + i), dest);
+    }
+    return 0;
+}
+
 /*возвращает количество выведенных символов, печатает в dest
 строку utf8*/
 int print_line_utf8 (struct line_utf8 *line, FILE *dest) {
     int i = 0;
     while(i < line->size) {
-        for(int j = 0; j < (line->text + i)->size; j++) {
-            putc(*((line->text + i)->symbol + j), dest);
-        }
+        putc_utf8(line->text + i, dest);
         i++;
     }
     return i + 1;
